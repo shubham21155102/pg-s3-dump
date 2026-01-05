@@ -1,0 +1,27 @@
+# Configuration files (contains sensitive data)
+config/*.conf
+.env
+
+# Backup files
+backups/*.dump
+backups/*.sql
+backups/*.gz
+
+# Log files
+logs/*.log
+
+# Temporary files
+*.tmp
+*.swp
+.*.swp
+
+# macOS
+.DS_Store
+
+# Editor files
+.idea/
+.vscode/
+*.iml
+*dump
+*.s3
+*.log*

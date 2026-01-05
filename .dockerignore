@@ -1,0 +1,50 @@
+# Configuration files (contains sensitive data)
+config/
+.env
+.env.local
+
+# Backup files
+backups/*.dump
+backups/*.sql
+backups/*.gz
+
+# Log files
+logs/
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Documentation
+*.md
+!README.md
+
+# CI/CD
+.gitlab-ci.yml
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Editor files
+.idea/
+.vscode/
+*.iml
+*.swp
+.*.swp
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
+*dump
+*.s3
+*.log*
+
+# Tests
+test/
+tests/
+*.test.bash

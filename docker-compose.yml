@@ -1,0 +1,86 @@
+# =============================================================================
+# PostgreSQL S3 Backup - Docker Compose Configuration
+# =============================================================================
+#
+# Usage:
+#   docker-compose run --rm pg-s3-backup backup
+#   docker-compose run --rm pg-s3-backup restore
+#   docker-compose run --rm pg-s3-backup list
+#
+# =============================================================================
+
+services:
+  pg-s3-backup:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/grassstone/pg-s3-backup:latest
+    container_name: pg-s3-backup
+
+    # Environment variables - configure these in .env file
+    environment:
+      # PostgreSQL Configuration
+      PGHOST: ${PGHOST}
+      PGPORT: ${PGPORT:-5432}
+      PGDATABASE: ${PGDATABASE}
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
+
+      # AWS Configuration
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-east-1}
+
+      # S3 Configuration
+      S3_BUCKET: ${S3_BUCKET}
+      S3_BACKUP_PATH: ${S3_BACKUP_PATH:-postgres-backups}
+
+      # Optional: Timezone
+      TZ: ${TZ:-UTC}
+
+    # Volume mounts
+    volumes:
+      # Persist local backups
+      - ./backups:/app/backups
+      # Persist logs
+      - ./logs:/app/logs
+
+    # Override entrypoint for direct command execution
+    entrypoint: ["/app/docker-entrypoint.sh"]
+
+  # Cron service for automated backups
+  pg-s3-backup-cron:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/grassstone/pg-s3-backup:latest
+    container_name: pg-s3-backup-cron
+    restart: unless-stopped
+
+    environment:
+      # PostgreSQL Configuration
+      PGHOST: ${PGHOST}
+      PGPORT: ${PGPORT:-5432}
+      PGDATABASE: ${PGDATABASE}
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
+
+      # AWS Configuration
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-east-1}
+
+      # S3 Configuration
+      S3_BUCKET: ${S3_BUCKET}
+      S3_BACKUP_PATH: ${S3_BACKUP_PATH:-postgres-backups}
+
+      # Cron Configuration
+      CRON_SCHEDULE: ${CRON_SCHEDULE:-0 2 * * *}
+      TZ: ${TZ:-UTC}
+
+    volumes:
+      - ./backups:/app/backups
+      - ./logs:/app/logs
+
+    profiles:
+      - cron
