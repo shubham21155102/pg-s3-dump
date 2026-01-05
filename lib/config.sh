@@ -92,9 +92,21 @@ EOF
 }
 
 load_postgres_config() {
+    # Check environment variables first (Docker mode)
+    if [[ -n "$PGHOST" && -n "$PGDATABASE" && -n "$PGUSER" && -n "$PGPASSWORD" ]]; then
+        PG_HOST="$PGHOST"
+        PG_PORT="${PGPORT:-5432}"
+        PG_DATABASE="$PGDATABASE"
+        PG_USER="$PGUSER"
+        PG_PASSWORD="$PGPASSWORD"
+        log_debug "PostgreSQL config loaded from environment"
+        return 0
+    fi
+
+    # Fall back to config file
     if [[ -f "$PG_CONFIG_FILE" ]]; then
         source "$PG_CONFIG_FILE"
-        log_debug "PostgreSQL config loaded"
+        log_debug "PostgreSQL config loaded from file"
         return 0
     else
         log_error "PostgreSQL configuration not found"
@@ -185,6 +197,20 @@ EOF
 }
 
 load_postgres_dest_config() {
+    # Check environment variables first (Docker mode)
+    # In Docker mode, we use the same PG* vars for both source and destination
+    if [[ -n "$PGHOST" && -n "$PGDATABASE" ]]; then
+        # Use same environment variables for destination
+        PG_HOST="$PGHOST"
+        PG_PORT="${PGPORT:-5432}"
+        PG_DATABASE="$PGDATABASE"
+        PG_USER="$PGUSER"
+        PG_PASSWORD="$PGPASSWORD"
+        log_debug "PostgreSQL destination config loaded from environment"
+        return 0
+    fi
+
+    # Fall back to config file
     if [[ -f "$PG_DEST_CONFIG_FILE" ]]; then
         source "$PG_DEST_CONFIG_FILE"
         # Use destination config for restore operations
@@ -193,7 +219,7 @@ load_postgres_dest_config() {
         PG_DATABASE="$DEST_PG_DATABASE"
         PG_USER="$DEST_PG_USER"
         PG_PASSWORD="$DEST_PG_PASSWORD"
-        log_debug "PostgreSQL destination config loaded"
+        log_debug "PostgreSQL destination config loaded from file"
         return 0
     else
         log_debug "No destination config found, using source config"
@@ -279,12 +305,22 @@ EOF
 }
 
 load_aws_config() {
+    # Check environment variables first (Docker mode)
+    if [[ -n "$AWS_ACCESS_KEY_ID" ]]; then
+        export AWS_ACCESS_KEY_ID
+        export AWS_SECRET_ACCESS_KEY
+        export AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-us-east-1}"
+        log_debug "AWS config loaded from environment"
+        return 0
+    fi
+
+    # Fall back to config file
     if [[ -f "$AWS_CONFIG_FILE" ]]; then
         source "$AWS_CONFIG_FILE"
         export AWS_ACCESS_KEY_ID
         export AWS_SECRET_ACCESS_KEY
         export AWS_DEFAULT_REGION
-        log_debug "AWS config loaded and exported"
+        log_debug "AWS config loaded from file"
         return 0
     else
         log_error "AWS configuration not found"
@@ -349,9 +385,17 @@ EOF
 }
 
 load_s3_config() {
+    # Check environment variables first (Docker mode)
+    if [[ -n "$S3_BUCKET" ]]; then
+        S3_BACKUP_PATH="${S3_BACKUP_PATH:-postgres-backups}"
+        log_debug "S3 config loaded from environment"
+        return 0
+    fi
+
+    # Fall back to config file
     if [[ -f "$S3_CONFIG_FILE" ]]; then
         source "$S3_CONFIG_FILE"
-        log_debug "S3 config loaded"
+        log_debug "S3 config loaded from file"
         return 0
     else
         log_error "S3 configuration not found"

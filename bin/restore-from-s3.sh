@@ -108,11 +108,17 @@ select_s3_backup() {
     # Get list of backups
     while IFS= read -r line; do
         [[ -z "$line" ]] && continue
+        [[ "$line" != *[0-9]* ]] && continue  # Skip lines without dates
+
         # Extract fields from s3 ls output: date time size key_path
+        # Using awk to handle variable whitespace properly
         local datetime=$(echo "$line" | awk '{print $1" "$2}')
         local size=$(echo "$line" | awk '{print $3}')
-        # The key path starts from field 4 (may contain spaces)
-        local key_path=$(echo "$line" | cut -d' ' -f4-)
+        # Use awk to extract everything after the size (field 4 onwards)
+        # This handles variable spacing between fields
+        local key_path=$(echo "$line" | awk '{for(i=4;i<=NF;i++) printf "%s%s", (i>4?" ":""), $i; print ""}')
+        [[ -z "$key_path" ]] && continue
+
         # Get just the filename for display
         local filename=$(basename "$key_path")
 
