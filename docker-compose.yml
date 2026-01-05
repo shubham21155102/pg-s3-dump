@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ghcr.io/grassstone/pg-s3-backup:latest
+    image: ghcr.io/shubham21155102/pg-s3-dump:latest
     container_name: pg-s3-backup
 
     # Environment variables - configure these in .env file
@@ -53,7 +53,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ghcr.io/grassstone/pg-s3-backup:latest
+    image: ghcr.io/shubham21155102/pg-s3-dump:latest
     container_name: pg-s3-backup-cron
     restart: unless-stopped
 

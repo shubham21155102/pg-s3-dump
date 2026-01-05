@@ -60,7 +60,7 @@ The easiest way to use this tool is with Docker:
 
 ```bash
 # Pull the image
-docker pull ghcr.io/grassstone/pg-s3-backup:latest
+docker pull ghcr.io/shubham21155102/pg-s3-dump:latest
 
 # Set up environment variables
 cp .env.example .env
@@ -155,14 +155,14 @@ docker run --rm \
   -e AWS_ACCESS_KEY_ID=AKIA... \
   -e AWS_SECRET_ACCESS_KEY=secret \
   -e S3_BUCKET=my-backups \
-  ghcr.io/grassstone/pg-s3-backup:latest backup
+  ghcr.io/shubham21155102/pg-s3-dump:latest backup
 
 # List backups
 docker run --rm \
   -e AWS_ACCESS_KEY_ID=AKIA... \
   -e AWS_SECRET_ACCESS_KEY=secret \
   -e S3_BUCKET=my-backups \
-  ghcr.io/grassstone/pg-s3-backup:latest list
+  ghcr.io/shubham21155102/pg-s3-dump:latest list
 
 # Restore from S3
 docker run --rm -it \
@@ -173,7 +173,7 @@ docker run --rm -it \
   -e AWS_ACCESS_KEY_ID=AKIA... \
   -e AWS_SECRET_ACCESS_KEY=secret \
   -e S3_BUCKET=my-backups \
-  ghcr.io/grassstone/pg-s3-backup:latest restore --clean
+  ghcr.io/shubham21155102/pg-s3-dump:latest restore --clean
 ```
 
 ### Automated Backups with Cron
@@ -211,8 +211,8 @@ docker-compose build
 ### Container Images
 
 Images are available at:
-- `ghcr.io/grassstone/pg-s3-backup:latest` - Latest release
-- `ghcr.io/grassstone/pg-s3-backup:v1.0.0` - Versioned releases
+- `ghcr.io/shubham21155102/pg-s3-dump:latest` - Latest release
+- `ghcr.io/shubham21155102/pg-s3-dump:v1.0.0` - Versioned releases
 
 Multi-platform support: `linux/amd64`, `linux/arm64`
 
@@ -327,7 +327,7 @@ s3://your-bucket/postgres-backups/YYYY-MM-DD/dbname_backup_YYYYMMDD_HHMMSS.dump
 
 Example:
 ```
-s3://my-backups/postgres-backups/2024-01-04/gs_user_auth_backup_20240104_143022.dump
+s3://my-backups/postgres-backups/2024-01-04/mydb_backup_20240104_143022.dump
 ```
 
 ## Security Notes
